@@ -7,7 +7,7 @@
 #define RingBuffer_Length(x)        (x.len)
 #define RingBuffer_Size(x)          (sizeof(x.data))
 #define RingBuffer_Free(x)          (sizeof(x.data) - x.len)
-#define RingBuffer_Data(x,i)        (x.data[x.beg + (i)])
+#define RingBuffer_Data(x,i)        (x.data[(x.beg + (i)) % sizeof(x.data)])
 
 #define RingBuffer_Init(x)          (x.len = x.beg = x.end = 0)
 #define RingBuffer_PopBack(x)       (RingBuffer_Length(x) > 0 ? (x.end--, x.len--) : 0)
@@ -39,7 +39,6 @@ do{\
 	x.len -= len;\
 }while(0)
 
-
 typedef struct
 {
 	unsigned len:9;
@@ -47,7 +46,27 @@ typedef struct
 	unsigned end:8;
 	unsigned mtx:1;
 	char data[256];
-}RingBuffer;
+}RingBuffer256;
+
+typedef struct
+{
+	unsigned len:10;
+	unsigned beg:9;
+	unsigned end:9;
+	unsigned mtx:1;
+	char data[512];
+}RingBuffer512;
+
+typedef struct
+{
+	unsigned len:11;
+	unsigned beg:10;
+	unsigned end:10;
+	unsigned mtx:1;
+	char data[1024];
+}RingBuffer1024;
+
+typedef RingBuffer256 RingBuffer;
 
 
 #endif//__RING_BUFFER_H__
